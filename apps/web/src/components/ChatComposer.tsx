@@ -7,7 +7,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from "react";
-import { Loader2, SendHorizontal } from "lucide-react";
+import { ArrowUp, Loader2 } from "lucide-react";
 
 interface ChatComposerProps {
   value: string;
@@ -30,7 +30,7 @@ export function ChatComposer({
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
   }, []);
 
   useEffect(() => {
@@ -50,8 +50,6 @@ export function ChatComposer({
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    // Desktop: Enter sends. Mobile keyboards often use Enter for newline;
-    // still allow Enter-to-send, Shift+Enter always newline.
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       handleSubmit();
@@ -59,41 +57,34 @@ export function ChatComposer({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="shrink-0 border-t border-zinc-200/70 bg-white/80 px-3 pt-3 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/80 sm:px-4 sm:pt-4"
-      style={{
-        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
-      }}
-    >
-      <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-zinc-200/80 bg-white p-2 shadow-sm shadow-zinc-900/5 dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/20">
-        <textarea
-          ref={ref}
-          rows={1}
-          value={value}
-          disabled={disabled}
-          placeholder={placeholder}
-          enterKeyHint="send"
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={onKeyDown}
-          className="max-h-40 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-3 text-base leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-400 disabled:opacity-60 dark:text-zinc-100 sm:min-h-[44px] sm:py-2.5 sm:text-sm"
-        />
-        <button
-          type="submit"
-          disabled={disabled || !value.trim()}
-          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11"
-          aria-label="Send message"
-        >
-          {disabled ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <SendHorizontal className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-      <p className="mx-auto mt-2 hidden max-w-3xl text-center text-[11px] text-zinc-500 sm:block">
-        Enter to send · Shift+Enter for a new line
-      </p>
-    </form>
+    <div className="shrink-0 bg-gradient-to-t from-zinc-50 via-zinc-50 to-transparent px-3 pb-3 pt-2 dark:from-zinc-950 dark:via-zinc-950 sm:px-4 sm:pb-4">
+      <form onSubmit={handleSubmit} className="mx-auto w-full max-w-3xl">
+        <div className="flex items-end gap-2 rounded-[28px] border border-zinc-200 bg-white px-3 py-2 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:px-4 sm:py-2.5">
+          <textarea
+            ref={ref}
+            rows={1}
+            value={value}
+            disabled={disabled}
+            placeholder={placeholder}
+            enterKeyHint="send"
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={onKeyDown}
+            className="max-h-[140px] min-h-[40px] flex-1 resize-none bg-transparent py-2 text-[16px] leading-6 text-zinc-900 outline-none placeholder:text-zinc-400 disabled:opacity-60 dark:text-zinc-100 sm:text-[15px]"
+          />
+          <button
+            type="submit"
+            disabled={disabled || !value.trim()}
+            className="mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white transition enabled:hover:bg-emerald-500 enabled:active:scale-95 disabled:bg-zinc-300 disabled:text-zinc-500 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-400"
+            aria-label="Send message"
+          >
+            {disabled ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowUp className="h-5 w-5" strokeWidth={2.5} />
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

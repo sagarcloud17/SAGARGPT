@@ -38,7 +38,7 @@ export function ConversationSidebar({
         className={`z-50 flex w-[min(100vw-3rem,300px)] shrink-0 flex-col border-r border-zinc-200/70 bg-white/95 backdrop-blur-xl transition-[transform,width,opacity] duration-300 ease-out dark:border-zinc-800 dark:bg-zinc-950/95 ${
           isDesktop
             ? `static h-full ${open ? "translate-x-0" : "w-0 overflow-hidden border-0 opacity-0"}`
-            : `fixed inset-y-0 left-0 h-dvh pt-[env(safe-area-inset-top)] ${
+            : `fixed inset-y-0 left-0 h-svh ${
                 open ? "translate-x-0 shadow-2xl" : "-translate-x-full"
               }`
         }`}
@@ -104,7 +104,7 @@ export function ConversationSidebar({
             </div>
           ))}
         </div>
-        <p className="border-t border-zinc-200/70 px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-[11px] text-zinc-500 dark:border-zinc-800">
+        <p className="border-t border-zinc-200/70 px-3 py-3 text-[11px] text-zinc-500 dark:border-zinc-800">
           History stays in this browser only.
         </p>
       </aside>

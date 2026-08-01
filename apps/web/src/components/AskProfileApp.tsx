@@ -24,12 +24,30 @@ import type { ChatMessage, Conversation } from "@/lib/types";
 import { useIsDesktop } from "@/lib/useMediaQuery";
 
 const SUGGESTED_PROMPTS = [
-  "Walk me through Sagar's most relevant AI / ML experience.",
-  "What tech stack is Sagar strongest in?",
-  "Summarize a project of his that shows production impact.",
-  "How does Sagar approach RAG systems end-to-end?",
-  "What roles is Sagar targeting right now?",
-  "Which of Sagar's achievements is he most proud of?",
+  {
+    label: "AI / ML experience",
+    prompt: "Walk me through Sagar's most relevant AI / ML experience.",
+  },
+  {
+    label: "Strongest tech stack",
+    prompt: "What tech stack is Sagar strongest in?",
+  },
+  {
+    label: "Production impact",
+    prompt: "Summarize a project of his that shows production impact.",
+  },
+  {
+    label: "RAG approach",
+    prompt: "How does Sagar approach RAG systems end-to-end?",
+  },
+  {
+    label: "Target roles",
+    prompt: "What roles is Sagar targeting right now?",
+  },
+  {
+    label: "Top achievements",
+    prompt: "Which of Sagar's achievements is he most proud of?",
+  },
 ];
 
 export function AskProfileApp() {
@@ -302,8 +320,8 @@ export function AskProfileApp() {
   const empty = messages.length === 0;
 
   return (
-    <div className="relative flex h-dvh max-h-dvh overflow-hidden text-zinc-900 dark:text-zinc-50">
-      <div className="pointer-events-none absolute inset-0 -z-10 mesh-bg" />
+    <div className="relative flex h-svh max-h-svh overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+      <div className="pointer-events-none absolute inset-0 -z-10 mesh-bg opacity-60 dark:opacity-100" />
       <ConversationSidebar
         open={sidebarOpen}
         conversations={conversations}
@@ -327,13 +345,13 @@ export function AskProfileApp() {
         />
 
         {error && (
-          <div className="mx-3 mt-3 flex shrink-0 items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300 sm:mx-5">
+          <div className="mx-3 mt-2 flex shrink-0 items-start gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300 sm:mx-4">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             <p className="min-w-0 flex-1 break-words">{error}</p>
             <button
               type="button"
               onClick={() => setError(null)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md hover:bg-red-500/10"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-red-500/10"
               aria-label="Dismiss error"
             >
               <X className="h-4 w-4" />
@@ -341,51 +359,70 @@ export function AskProfileApp() {
           </div>
         )}
 
-        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 sm:py-6">
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 sm:gap-5">
+        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-4 py-4 sm:px-5 sm:py-6">
             {empty ? (
-              <div className="animate-fade-in py-6 text-center sm:py-14">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 sm:mb-5 sm:h-14 sm:w-14">
-                  <Sparkles className="h-6 w-6 sm:h-7 sm:w-7" />
+              <div className="animate-fade-in flex flex-1 flex-col justify-center gap-8 py-6 sm:py-10">
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600/15 text-emerald-600 dark:text-emerald-400">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <h1 className="text-[28px] font-semibold tracking-tight sm:text-4xl">
+                    Ask {candidateShortName}
+                  </h1>
+                  <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                    Answers grounded in {candidateName}&apos;s résumé.
+                  </p>
                 </div>
-                <h1 className="font-[family-name:var(--font-geist-sans)] text-2xl font-semibold tracking-tight sm:text-4xl">
-                  Ask {candidateShortName}
-                </h1>
-                <p className="mx-auto mt-3 max-w-md px-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  Chat with {candidateName}&apos;s personal assistant — an
-                  advocate grounded in his résumé. Strong on substance, no
-                  invented credentials.
-                </p>
-                <div className="mt-6 grid grid-cols-1 gap-2 sm:mt-8 sm:grid-cols-2">
-                  {SUGGESTED_PROMPTS.map((prompt) => (
+
+                <div className="sm:hidden">
+                  <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {SUGGESTED_PROMPTS.map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void sendMessage(item.prompt)}
+                        className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2.5 text-[13px] font-medium text-zinc-700 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="hidden gap-2 sm:grid sm:grid-cols-2">
+                  {SUGGESTED_PROMPTS.map((item) => (
                     <button
-                      key={prompt}
+                      key={item.label}
                       type="button"
                       disabled={busy}
-                      onClick={() => void sendMessage(prompt)}
-                      className="min-h-12 rounded-xl border border-zinc-200/80 bg-white/70 px-3 py-3 text-left text-sm leading-snug text-zinc-700 transition hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.99] dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-300 dark:hover:border-emerald-500/40"
+                      onClick={() => void sendMessage(item.prompt)}
+                      className="rounded-2xl border border-zinc-200/80 bg-white/80 px-4 py-3.5 text-left text-sm leading-snug text-zinc-700 transition hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-300"
                     >
-                      {prompt}
+                      {item.prompt}
                     </button>
                   ))}
                 </div>
               </div>
             ) : (
-              messages.map((m, idx) => (
-                <MessageBubble
-                  key={m.id}
-                  message={m}
-                  showRegenerate={
-                    !busy &&
-                    m.role === "assistant" &&
-                    idx === messages.length - 1 &&
-                    !m.streaming
-                  }
-                  onRegenerate={onRegenerate}
-                />
-              ))
+              <div className="flex flex-col gap-5 pb-4 sm:gap-6">
+                {messages.map((m, idx) => (
+                  <MessageBubble
+                    key={m.id}
+                    message={m}
+                    showRegenerate={
+                      !busy &&
+                      m.role === "assistant" &&
+                      idx === messages.length - 1 &&
+                      !m.streaming
+                    }
+                    onRegenerate={onRegenerate}
+                  />
+                ))}
+                <div ref={bottomRef} className="h-1" />
+              </div>
             )}
-            <div ref={bottomRef} className="h-2" />
           </div>
         </main>
 

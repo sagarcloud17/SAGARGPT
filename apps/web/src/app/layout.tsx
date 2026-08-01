@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: "Ask Bantu — Personal AI Assistant",
   description:
     "Chat with Bantu Sagar Kumar's personal assistant — an advocate grounded in his résumé via RAG.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Ask Bantu",
+  },
   robots: {
     index: false,
     follow: false,
@@ -44,9 +49,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} h-full overflow-hidden bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50`}
       >
         <ThemeProvider>{children}</ThemeProvider>
       </body>

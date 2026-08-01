@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Bot, Check, Copy, RefreshCw, User } from "lucide-react";
+import { Check, Copy, RefreshCw } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
 
 interface MessageBubbleProps {
@@ -26,11 +26,12 @@ function ThinkingStatus() {
 
   return (
     <p
-      className="animate-pulse text-sm font-medium text-zinc-400 dark:text-zinc-500"
+      className="text-[15px] font-medium text-zinc-400 dark:text-zinc-500"
       aria-live="polite"
-      aria-label={STATUS_STEPS[step]}
     >
-      {STATUS_STEPS[step]}
+      <span className="inline-flex gap-1">
+        <span className="animate-pulse">{STATUS_STEPS[step]}</span>
+      </span>
     </p>
   );
 }
@@ -55,84 +56,56 @@ export function MessageBubble({
     }
   };
 
+  if (isUser) {
+    return (
+      <div className="flex w-full justify-end">
+        <div className="max-w-[85%] rounded-[22px] bg-emerald-600 px-4 py-2.5 text-[15px] leading-6 text-white sm:max-w-[75%]">
+          <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`flex w-full gap-2 sm:gap-3 ${isUser ? "justify-end" : "justify-start"}`}
-    >
-      {!isUser && (
-        <div
-          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600/15 text-emerald-700 dark:text-emerald-400"
-          aria-label="Assistant"
-        >
-          <Bot className="h-4 w-4" />
-        </div>
-      )}
-
-      <div
-        className={`min-w-0 ${
-          isUser
-            ? "max-w-[min(88%,28rem)] sm:max-w-[min(80%,36rem)]"
-            : "max-w-[min(100%,42rem)] flex-1 sm:flex-none"
-        }`}
-      >
-        <div
-          className={`rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed sm:px-4 sm:py-3 sm:text-sm ${
-            isUser
-              ? "bg-emerald-600 text-white shadow-sm shadow-emerald-900/10"
-              : "border border-zinc-200/80 bg-white/80 text-zinc-800 shadow-sm shadow-zinc-900/5 dark:border-zinc-700/80 dark:bg-zinc-900/70 dark:text-zinc-100 dark:shadow-black/20"
-          }`}
-        >
-          {showStatus && <ThinkingStatus />}
-          {isUser ? (
-            <p className="whitespace-pre-wrap break-words">{message.content}</p>
-          ) : (
-            message.content && (
-              <div className="ask-md break-words">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {message.content}
-                </ReactMarkdown>
-                {showCursor && (
-                  <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-emerald-500 align-middle" />
-                )}
-              </div>
-            )
-          )}
-        </div>
-
-        {!isUser && !message.streaming && message.content && (
-          <div className="mt-1.5 flex flex-wrap items-center gap-1">
-            <button
-              type="button"
-              onClick={copy}
-              className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 active:scale-[0.98] dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-            >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-emerald-500" />
-              ) : (
-                <Copy className="h-3.5 w-3.5" />
-              )}
-              {copied ? "Copied" : "Copy"}
-            </button>
-            {showRegenerate && onRegenerate && (
-              <button
-                type="button"
-                onClick={onRegenerate}
-                className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 active:scale-[0.98] dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Regenerate
-              </button>
+    <div className="flex w-full flex-col gap-2">
+      <div className="w-full max-w-none text-[15px] leading-7 text-zinc-800 dark:text-zinc-100 sm:max-w-3xl">
+        {showStatus && <ThinkingStatus />}
+        {message.content && (
+          <div className="ask-md break-words">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.content}
+            </ReactMarkdown>
+            {showCursor && (
+              <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-emerald-500 align-middle" />
             )}
           </div>
         )}
       </div>
 
-      {isUser && (
-        <div
-          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-          aria-label="You"
-        >
-          <User className="h-4 w-4" />
+      {!message.streaming && message.content && (
+        <div className="flex items-center gap-0.5">
+          <button
+            type="button"
+            onClick={copy}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-xs text-zinc-500 transition hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-emerald-500" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+            {copied ? "Copied" : "Copy"}
+          </button>
+          {showRegenerate && onRegenerate && (
+            <button
+              type="button"
+              onClick={onRegenerate}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-xs text-zinc-500 transition hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Regenerate
+            </button>
+          )}
         </div>
       )}
     </div>

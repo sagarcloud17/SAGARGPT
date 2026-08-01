@@ -33,7 +33,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("ask-profile.theme") as Theme | null;
-    const initial = stored === "light" || stored === "dark" ? stored : getSystemTheme();
+    const initial =
+      stored === "light" || stored === "dark" ? stored : getSystemTheme();
     setThemeState(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
     setReady(true);
@@ -67,7 +68,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={value}>
-      <div className={ready ? "opacity-100" : "opacity-0"}>{children}</div>
+      <div
+        className={`h-full w-full ${ready ? "opacity-100" : "opacity-0"}`}
+      >
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 }
