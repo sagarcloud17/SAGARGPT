@@ -1,0 +1,6 @@
+# Ask Profile — FastAPI Cloud notes
+#
+# Application Directory (dashboard → Settings): apps/api
+# Entrypoint: app.main:app
+# Dependencies: apps/api/requirements.txt
+# Resume: apps/api/data/resume.pdf (also kept at repo data/resume.pdf)
