@@ -106,6 +106,85 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
+## Deploy API to FastAPI Cloud
+
+Your API lives in a monorepo subdirectory. FastAPI Cloud + GitHub can deploy it if the repo is pushed and the **Application Directory** is set.
+
+### 0. Push the API code (required)
+
+`apps/api/` must be on GitHub. From the repo root:
+
+```powershell
+git add apps/api data/resume.pdf scripts .env.example README.md
+git status
+git commit -m "Add Ask Profile FastAPI API for FastAPI Cloud deploy"
+git push origin HEAD
+```
+
+Do **not** commit `.env` (secrets).
+
+### 1. Create / configure the app in FastAPI Cloud
+
+1. Open [fastapicloud.com](https://fastapicloud.com) dashboard.
+2. Create an app from your GitHub repo (`sagarcloud17/myAI`), **or** open the existing connected app.
+3. **Settings → Application Directory** (or Root Directory when creating): set to:
+
+   ```text
+   apps/api
+   ```
+
+4. Save / redeploy.
+
+### 2. Set environment variables
+
+In the app **Environment / Secrets** settings, add at least:
+
+| Variable | Example |
+|----------|---------|
+| `OPENAI_API_KEY` | `sk-...` |
+| `PINECONE_API_KEY` | `pcsk_...` |
+| `PINECONE_INDEX_NAME` | `ask-bantu` |
+| `PINECONE_NAMESPACE` | `data-bantu` |
+| `CANDIDATE_NAME` | `Bantu Sagar Kumar` |
+| `CANDIDATE_SHORT_NAME` | `Bantu` |
+| `CORS_ORIGINS` | `http://localhost:3000` (add Vercel URL later) |
+| `LANGSMITH_TRACING` | `true` (optional) |
+| `LANGSMITH_API_KEY` | `lsv2_pt_...` (optional) |
+| `LANGSMITH_PROJECT` | `ask-bantu` |
+
+Use the **same** Pinecone index/namespace you ingested locally.
+
+### 3. Deploy
+
+**Option A — GitHub (you already connected):**  
+Push to the repo **default branch** (usually `main`). FastAPI Cloud builds and deploys automatically.
+
+**Option B — CLI:**
+
+```powershell
+cd apps\api
+pip install "fastapi[standard]"
+fastapi login
+fastapi deploy
+```
+
+### 4. Verify
+
+After deploy you get a URL like `https://something.fastapicloud.dev`.
+
+- Health: `https://YOUR_APP.fastapicloud.dev/health`
+- Docs: `https://YOUR_APP.fastapicloud.dev/docs`
+- Resume: `https://YOUR_APP.fastapicloud.dev/resume/download`
+
+### 5. Point the frontend later
+
+When the web app is on Vercel, set:
+
+- API: `CORS_ORIGINS=https://your-app.vercel.app`
+- Web: `NEXT_PUBLIC_API_URL=https://YOUR_APP.fastapicloud.dev`
+
+---
+
 ## LangSmith tracing
 
 Add to root `.env`:
