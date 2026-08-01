@@ -57,6 +57,8 @@ body {
 /* Markdown prose inside assistant bubbles */
 .ask-md {
   line-height: 1.65;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .ask-md > *:first-child {
@@ -120,9 +122,11 @@ body {
 .ask-md pre {
   margin: 0.75em 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
   background: #ecfdf5;
+  max-width: 100%;
 }
 
 .dark .ask-md pre {
@@ -139,6 +143,10 @@ body {
   margin: 0.75em 0;
   border-collapse: collapse;
   font-size: 0.9em;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 .ask-md th,

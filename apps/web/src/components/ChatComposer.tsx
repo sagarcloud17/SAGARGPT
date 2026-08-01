@@ -22,7 +22,7 @@ export function ChatComposer({
   onChange,
   onSubmit,
   disabled,
-  placeholder = "Ask about experience, skills, projects…",
+  placeholder = "Ask about Sagar…",
 }: ChatComposerProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -50,7 +50,9 @@ export function ChatComposer({
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // Desktop: Enter sends. Mobile keyboards often use Enter for newline;
+    // still allow Enter-to-send, Shift+Enter always newline.
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       handleSubmit();
     }
@@ -59,23 +61,27 @@ export function ChatComposer({
   return (
     <form
       onSubmit={handleSubmit}
-      className="shrink-0 border-t border-zinc-200/70 bg-white/60 p-3 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/60 sm:p-4"
+      className="shrink-0 border-t border-zinc-200/70 bg-white/80 px-3 pt-3 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/80 sm:px-4 sm:pt-4"
+      style={{
+        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+      }}
     >
-      <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-zinc-200/80 bg-white/90 p-2 shadow-sm shadow-zinc-900/5 dark:border-zinc-700 dark:bg-zinc-900/90 dark:shadow-black/20">
+      <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-zinc-200/80 bg-white p-2 shadow-sm shadow-zinc-900/5 dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/20">
         <textarea
           ref={ref}
           rows={1}
           value={value}
           disabled={disabled}
           placeholder={placeholder}
+          enterKeyHint="send"
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
-          className="max-h-40 min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-sm leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-400 disabled:opacity-60 dark:text-zinc-100"
+          className="max-h-40 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-3 text-base leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-400 disabled:opacity-60 dark:text-zinc-100 sm:min-h-[44px] sm:py-2.5 sm:text-sm"
         />
         <button
           type="submit"
           disabled={disabled || !value.trim()}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:h-11 sm:w-11"
           aria-label="Send message"
         >
           {disabled ? (
@@ -85,8 +91,8 @@ export function ChatComposer({
           )}
         </button>
       </div>
-      <p className="mx-auto mt-2 max-w-3xl text-center text-[11px] text-zinc-500">
-        Enter to send · Shift+Enter for a new line 
+      <p className="mx-auto mt-2 hidden max-w-3xl text-center text-[11px] text-zinc-500 sm:block">
+        Enter to send · Shift+Enter for a new line
       </p>
     </form>
   );

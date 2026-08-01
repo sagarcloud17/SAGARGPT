@@ -57,20 +57,26 @@ export function MessageBubble({
 
   return (
     <div
-      className={`flex w-full gap-3 ${isUser ? "justify-end" : "justify-start"}`}
+      className={`flex w-full gap-2 sm:gap-3 ${isUser ? "justify-end" : "justify-start"}`}
     >
       {!isUser && (
         <div
-          className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600/15 text-emerald-700 dark:text-emerald-400"
+          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600/15 text-emerald-700 dark:text-emerald-400"
           aria-label="Assistant"
         >
           <Bot className="h-4 w-4" />
         </div>
       )}
 
-      <div className="max-w-[min(100%,42rem)]">
+      <div
+        className={`min-w-0 ${
+          isUser
+            ? "max-w-[min(88%,28rem)] sm:max-w-[min(80%,36rem)]"
+            : "max-w-[min(100%,42rem)] flex-1 sm:flex-none"
+        }`}
+      >
         <div
-          className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+          className={`rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed sm:px-4 sm:py-3 sm:text-sm ${
             isUser
               ? "bg-emerald-600 text-white shadow-sm shadow-emerald-900/10"
               : "border border-zinc-200/80 bg-white/80 text-zinc-800 shadow-sm shadow-zinc-900/5 dark:border-zinc-700/80 dark:bg-zinc-900/70 dark:text-zinc-100 dark:shadow-black/20"
@@ -78,10 +84,10 @@ export function MessageBubble({
         >
           {showStatus && <ThinkingStatus />}
           {isUser ? (
-            <p className="whitespace-pre-wrap">{message.content}</p>
+            <p className="whitespace-pre-wrap break-words">{message.content}</p>
           ) : (
             message.content && (
-              <div className="ask-md">
+              <div className="ask-md break-words">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {message.content}
                 </ReactMarkdown>
@@ -94,16 +100,16 @@ export function MessageBubble({
         </div>
 
         {!isUser && !message.streaming && message.content && (
-          <div className="mt-2 flex items-center gap-1">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1">
             <button
               type="button"
               onClick={copy}
-              className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+              className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 active:scale-[0.98] dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
             >
               {copied ? (
-                <Check className="h-3 w-3 text-emerald-500" />
+                <Check className="h-3.5 w-3.5 text-emerald-500" />
               ) : (
-                <Copy className="h-3 w-3" />
+                <Copy className="h-3.5 w-3.5" />
               )}
               {copied ? "Copied" : "Copy"}
             </button>
@@ -111,9 +117,9 @@ export function MessageBubble({
               <button
                 type="button"
                 onClick={onRegenerate}
-                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 active:scale-[0.98] dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
               >
-                <RefreshCw className="h-3 w-3" />
+                <RefreshCw className="h-3.5 w-3.5" />
                 Regenerate
               </button>
             )}
@@ -123,7 +129,7 @@ export function MessageBubble({
 
       {isUser && (
         <div
-          className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
           aria-label="You"
         >
           <User className="h-4 w-4" />
