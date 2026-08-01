@@ -241,6 +241,11 @@ export function ChatLayout() {
     setActiveId(created.id);
     setDraft("");
     setError(null);
+    // On mobile, close the drawer so the clean empty chat is visible
+    if (!isDesktop) {
+      sidebarUserToggled.current = true;
+      setSidebarOpen(false);
+    }
   };
 
   const onDelete = (id: string) => {
