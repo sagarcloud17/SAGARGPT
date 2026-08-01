@@ -1,5 +1,5 @@
-import { AskProfileApp } from "@/components/AskProfileApp";
+import { ChatLayout } from "@/components/ChatLayout";
 
 export default function HomePage() {
-  return <AskProfileApp />;
+  return <ChatLayout />;
 }

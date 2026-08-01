@@ -29,13 +29,13 @@ export function ConversationSidebar({
       {open && !isDesktop && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
           aria-label="Close sidebar overlay"
           onClick={onCloseMobile}
         />
       )}
       <aside
-        className={`z-50 flex w-[min(100vw-3rem,300px)] shrink-0 flex-col border-r border-zinc-200/70 bg-white/95 backdrop-blur-xl transition-[transform,width,opacity] duration-300 ease-out dark:border-zinc-800 dark:bg-zinc-950/95 ${
+        className={`z-50 flex w-[min(100vw-3rem,280px)] shrink-0 flex-col border-r border-border bg-surface transition-[transform,width,opacity] duration-300 ease-out ${
           isDesktop
             ? `static h-full ${open ? "translate-x-0" : "w-0 overflow-hidden border-0 opacity-0"}`
             : `fixed inset-y-0 left-0 h-svh ${
@@ -43,15 +43,15 @@ export function ConversationSidebar({
               }`
         }`}
       >
-        <div className="flex items-center justify-between gap-2 border-b border-zinc-200/70 px-3 py-3 dark:border-zinc-800">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">
+        <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted">
             Chats
           </p>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={onNew}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 text-xs font-medium text-white transition hover:bg-emerald-500 active:scale-[0.98]"
+              className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-2.5 text-xs font-medium text-white transition hover:bg-accent-dim"
             >
               <MessageSquarePlus className="h-3.5 w-3.5" />
               New
@@ -60,7 +60,7 @@ export function ConversationSidebar({
               <button
                 type="button"
                 onClick={onCloseMobile}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+                className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-white/5 hover:text-text"
                 aria-label="Close chats"
               >
                 <X className="h-4 w-4" />
@@ -68,24 +68,25 @@ export function ConversationSidebar({
             )}
           </div>
         </div>
-        <div className="flex-1 space-y-1 overflow-y-auto overscroll-contain p-2">
+
+        <div className="flex-1 space-y-0.5 overflow-y-auto p-2 chat-scroll">
           {conversations.length === 0 && (
-            <p className="px-2 py-6 text-center text-xs text-zinc-500">
+            <p className="px-2 py-8 text-center text-xs text-text-muted">
               No conversations yet
             </p>
           )}
           {conversations.map((c) => (
             <div
               key={c.id}
-              className={`group flex items-center gap-1 rounded-xl px-2 py-1.5 transition ${
+              className={`group flex items-center gap-1 rounded-xl px-1.5 py-0.5 transition ${
                 c.id === activeId
-                  ? "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
-                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                  ? "bg-accent/10 text-accent"
+                  : "text-text-secondary hover:bg-white/5 hover:text-text"
               }`}
             >
               <button
                 type="button"
-                className="min-h-10 min-w-0 flex-1 truncate py-1 text-left text-sm"
+                className="min-h-11 min-w-0 flex-1 truncate px-1.5 py-2 text-left text-sm"
                 onClick={() => {
                   onSelect(c.id);
                   if (!isDesktop) onCloseMobile?.();
@@ -95,7 +96,7 @@ export function ConversationSidebar({
               </button>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-200/80 hover:text-red-500 dark:hover:bg-zinc-800 md:h-8 md:w-8 md:opacity-0 md:group-hover:opacity-100"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-muted opacity-100 transition hover:bg-white/5 hover:text-red-400 md:opacity-0 md:group-hover:opacity-100"
                 aria-label="Delete conversation"
                 onClick={() => onDelete(c.id)}
               >
@@ -104,7 +105,8 @@ export function ConversationSidebar({
             </div>
           ))}
         </div>
-        <p className="border-t border-zinc-200/70 px-3 py-3 text-[11px] text-zinc-500 dark:border-zinc-800">
+
+        <p className="border-t border-border px-3 py-3 text-[11px] text-text-muted">
           History stays in this browser only.
         </p>
       </aside>

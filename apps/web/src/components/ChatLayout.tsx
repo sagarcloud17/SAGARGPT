@@ -1,16 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlertCircle, Sparkles, X } from "lucide-react";
-import { ChatComposer } from "@/components/ChatComposer";
+import { AlertCircle, X } from "lucide-react";
+import { ChatContainer } from "@/components/ChatContainer";
+import { ChatHeader } from "@/components/ChatHeader";
+import { ChatInput } from "@/components/ChatInput";
 import { ConversationSidebar } from "@/components/ConversationSidebar";
-import { HeaderBar } from "@/components/HeaderBar";
-import { MessageBubble } from "@/components/MessageBubble";
-import {
-  candidateName,
-  candidateShortName,
-  streamChat,
-} from "@/lib/api";
+import { streamChat } from "@/lib/api";
 import {
   createMessageId,
   loadActiveId,
@@ -23,46 +19,19 @@ import {
 import type { ChatMessage, Conversation } from "@/lib/types";
 import { useIsDesktop } from "@/lib/useMediaQuery";
 
-const SUGGESTED_PROMPTS = [
-  {
-    label: "AI / ML experience",
-    prompt: "Walk me through Sagar's most relevant AI / ML experience.",
-  },
-  {
-    label: "Strongest tech stack",
-    prompt: "What tech stack is Sagar strongest in?",
-  },
-  {
-    label: "Production impact",
-    prompt: "Summarize a project of his that shows production impact.",
-  },
-  {
-    label: "RAG approach",
-    prompt: "How does Sagar approach RAG systems end-to-end?",
-  },
-  {
-    label: "Target roles",
-    prompt: "What roles is Sagar targeting right now?",
-  },
-  {
-    label: "Top achievements",
-    prompt: "Which of Sagar's achievements is he most proud of?",
-  },
-];
-
-export function AskProfileApp() {
+export function ChatLayout() {
   const isDesktop = useIsDesktop();
   const [hydrated, setHydrated] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeId, setActiveId] = useState<string>("");
+  const [activeId, setActiveId] = useState("");
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const conversationsRef = useRef<Conversation[]>([]);
   const sidebarUserToggled = useRef(false);
+
   useEffect(() => {
     conversationsRef.current = conversations;
   }, [conversations]);
@@ -87,17 +56,14 @@ export function AskProfileApp() {
     setHydrated(true);
   }, []);
 
-  // Keep sidebar behavior solid across resize / rotate
   useEffect(() => {
     if (!hydrated) return;
     if (!sidebarUserToggled.current) {
       setSidebarOpen(isDesktop);
     } else if (isDesktop) {
-      // Crossing into desktop: show sidebar by default again
       setSidebarOpen(true);
       sidebarUserToggled.current = false;
     } else {
-      // Crossing into mobile: close overlay drawer
       setSidebarOpen(false);
       sidebarUserToggled.current = false;
     }
@@ -107,6 +73,7 @@ export function AskProfileApp() {
     if (!hydrated) return;
     saveConversations(conversations);
   }, [conversations, hydrated]);
+
   useEffect(() => {
     if (!hydrated || !activeId) return;
     saveActiveId(activeId);
@@ -117,15 +84,11 @@ export function AskProfileApp() {
     [conversations, activeId],
   );
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [active?.messages, busy]);
-
   const updateConversation = useCallback(
     (convId: string, updater: (conv: Conversation) => Conversation) => {
       setConversations((prev) => {
-        const safePrev = Array.isArray(prev) ? prev : [];
-        return safePrev.map((c) => (c.id === convId ? updater(c) : c));
+        const safe = Array.isArray(prev) ? prev : [];
+        return safe.map((c) => (c.id === convId ? updater(c) : c));
       });
     },
     [],
@@ -134,10 +97,7 @@ export function AskProfileApp() {
   const ensureActiveConversation = useCallback((): string => {
     if (activeId) return activeId;
     const created = makeEmptyConversation();
-    setConversations((prev) => {
-      const safe = Array.isArray(prev) ? prev : [];
-      return [created, ...safe];
-    });
+    setConversations((prev) => [created, ...(Array.isArray(prev) ? prev : [])]);
     setActiveId(created.id);
     saveActiveId(created.id);
     return created.id;
@@ -187,7 +147,6 @@ export function AskProfileApp() {
         streaming: true,
       };
 
-      const nextMessages = [...prior, userMsg, assistantMsg];
       const updatedConv: Conversation = {
         ...snapshot,
         id: convId,
@@ -195,7 +154,7 @@ export function AskProfileApp() {
           snapshot.title === "New chat" || !snapshot.title
             ? titleFromMessage(trimmed)
             : snapshot.title,
-        messages: nextMessages,
+        messages: [...prior, userMsg, assistantMsg],
         updatedAt: Date.now(),
       };
 
@@ -292,9 +251,7 @@ export function AskProfileApp() {
         setActiveId(fresh.id);
         return [fresh];
       }
-      if (id === activeId) {
-        setActiveId(safe[0]!.id);
-      }
+      if (id === activeId) setActiveId(safe[0]!.id);
       return safe;
     });
   };
@@ -310,18 +267,16 @@ export function AskProfileApp() {
 
   if (!hydrated) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-zinc-500">
-        Loading Ask {candidateShortName}…
+      <div className="flex h-svh items-center justify-center bg-bg text-sm text-text-muted">
+        Loading Ask Bantu…
       </div>
     );
   }
 
-  const messages = active?.messages ?? [];
-  const empty = messages.length === 0;
-
   return (
-    <div className="relative flex h-svh max-h-svh overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
-      <div className="pointer-events-none absolute inset-0 -z-10 mesh-bg opacity-60 dark:opacity-100" />
+    <div className="relative flex h-svh max-h-svh overflow-hidden text-text">
+      <div className="pointer-events-none absolute inset-0 -z-10 app-atmosphere" />
+
       <ConversationSidebar
         open={sidebarOpen}
         conversations={conversations}
@@ -335,8 +290,9 @@ export function AskProfileApp() {
         }}
         isDesktop={isDesktop}
       />
+
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <HeaderBar
+        <ChatHeader
           sidebarOpen={sidebarOpen}
           onToggleSidebar={() => {
             sidebarUserToggled.current = true;
@@ -345,7 +301,7 @@ export function AskProfileApp() {
         />
 
         {error && (
-          <div className="mx-3 mt-2 flex shrink-0 items-start gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300 sm:mx-4">
+          <div className="mx-3 mt-2 flex shrink-0 items-start gap-2 rounded-2xl border border-red-500/25 bg-red-500/10 px-3 py-2.5 text-sm text-red-300 sm:mx-4">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             <p className="min-w-0 flex-1 break-words">{error}</p>
             <button
@@ -359,74 +315,14 @@ export function AskProfileApp() {
           </div>
         )}
 
-        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-4 py-4 sm:px-5 sm:py-6">
-            {empty ? (
-              <div className="animate-fade-in flex flex-1 flex-col justify-center gap-8 py-6 sm:py-10">
-                <div className="text-center">
-                  <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600/15 text-emerald-600 dark:text-emerald-400">
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                  <h1 className="text-[28px] font-semibold tracking-tight sm:text-4xl">
-                    Ask {candidateShortName}
-                  </h1>
-                  <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-zinc-500 dark:text-zinc-400">
-                    Answers grounded in {candidateName}&apos;s résumé.
-                  </p>
-                </div>
+        <ChatContainer
+          messages={active?.messages ?? []}
+          busy={busy}
+          onSelectPrompt={(p) => void sendMessage(p)}
+          onRegenerate={onRegenerate}
+        />
 
-                <div className="sm:hidden">
-                  <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {SUGGESTED_PROMPTS.map((item) => (
-                      <button
-                        key={item.label}
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void sendMessage(item.prompt)}
-                        className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2.5 text-[13px] font-medium text-zinc-700 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="hidden gap-2 sm:grid sm:grid-cols-2">
-                  {SUGGESTED_PROMPTS.map((item) => (
-                    <button
-                      key={item.label}
-                      type="button"
-                      disabled={busy}
-                      onClick={() => void sendMessage(item.prompt)}
-                      className="rounded-2xl border border-zinc-200/80 bg-white/80 px-4 py-3.5 text-left text-sm leading-snug text-zinc-700 transition hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-300"
-                    >
-                      {item.prompt}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-5 pb-4 sm:gap-6">
-                {messages.map((m, idx) => (
-                  <MessageBubble
-                    key={m.id}
-                    message={m}
-                    showRegenerate={
-                      !busy &&
-                      m.role === "assistant" &&
-                      idx === messages.length - 1 &&
-                      !m.streaming
-                    }
-                    onRegenerate={onRegenerate}
-                  />
-                ))}
-                <div ref={bottomRef} className="h-1" />
-              </div>
-            )}
-          </div>
-        </main>
-
-        <ChatComposer
+        <ChatInput
           value={draft}
           onChange={setDraft}
           onSubmit={() => void sendMessage(draft)}
