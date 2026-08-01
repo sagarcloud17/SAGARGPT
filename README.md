@@ -19,7 +19,7 @@ Personal AI assistant for recruiters — chat in real time with **Bantu Sagar’
 apps/api/          FastAPI + LangChain RAG
 apps/web/          Next.js 15 (App Router) + Tailwind v4
 scripts/ingest.py  PDF → Pinecone ingestion
-data/resume.pdf    Candidate résumé
+data/resume.pdf    Candidate information
 ```
 
 ---
