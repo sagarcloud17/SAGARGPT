@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-const STEPS = ["Thinking…", "Searching…", "Composing…"] as const;
+const STEPS = [
+  "Thinking…",
+  "Searching…",
+  "Searching projects…",
+  "Generating answer…",
+] as const;
 
 export function TypingIndicator() {
   const [step, setStep] = useState(0);
@@ -11,7 +16,7 @@ export function TypingIndicator() {
   useEffect(() => {
     const id = window.setInterval(() => {
       setStep((s) => (s + 1) % STEPS.length);
-    }, 1200);
+    }, 1100);
     return () => window.clearInterval(id);
   }, []);
 
@@ -19,7 +24,7 @@ export function TypingIndicator() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 py-1"
+      className="flex items-center gap-3 py-2"
       aria-live="polite"
       aria-label={STEPS[step]}
     >
@@ -38,7 +43,18 @@ export function TypingIndicator() {
           />
         ))}
       </span>
-      <span className="text-sm text-text-muted">{STEPS[step]}</span>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={STEPS[step]}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.18 }}
+          className="font-sans text-sm text-text-muted"
+        >
+          {STEPS[step]}
+        </motion.span>
+      </AnimatePresence>
     </motion.div>
   );
 }

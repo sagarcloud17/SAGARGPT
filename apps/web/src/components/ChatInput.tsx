@@ -58,12 +58,9 @@ export function ChatInput({
   const canSend = Boolean(value.trim()) && !disabled;
 
   return (
-    <div className="shrink-0 bg-gradient-to-t from-bg via-bg to-transparent px-3 pb-3 pt-2 sm:px-4 sm:pb-5">
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto w-full max-w-[900px]"
-      >
-        <div className="flex items-end gap-2 rounded-[28px] border border-border bg-surface px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.35)] sm:px-4 sm:py-2.5">
+    <div className="shrink-0 bg-gradient-to-t from-bg via-bg/95 to-transparent px-3 pb-3 pt-3 sm:px-4 sm:pb-5 sm:pt-4">
+      <form onSubmit={handleSubmit} className="mx-auto w-full max-w-[760px]">
+        <div className="chat-input-shell flex items-end gap-2 rounded-[26px] px-3 py-2 sm:px-4 sm:py-2.5">
           <textarea
             ref={ref}
             rows={1}
@@ -73,14 +70,14 @@ export function ChatInput({
             enterKeyHint="send"
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
-            className="max-h-[160px] min-h-[44px] flex-1 resize-none bg-transparent py-2.5 text-[16px] leading-6 text-text outline-none placeholder:text-text-muted disabled:opacity-60 sm:text-[15px]"
+            className="max-h-[160px] min-h-[44px] flex-1 resize-none bg-transparent py-2.5 font-sans text-[16px] leading-6 text-text outline-none placeholder:text-text-muted disabled:opacity-60 sm:text-[15px]"
             aria-label="Message input"
           />
           <motion.button
             type="submit"
             disabled={!canSend}
             whileTap={canSend ? { scale: 0.92 } : undefined}
-            className="focus-ring mb-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-white transition enabled:hover:bg-accent-dim disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-text-muted"
+            className="focus-ring mb-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-[#0b0f14] transition enabled:hover:bg-accent-dim disabled:cursor-not-allowed disabled:bg-white/8 disabled:text-text-muted"
             aria-label="Send message"
           >
             {disabled ? (
@@ -90,8 +87,8 @@ export function ChatInput({
             )}
           </motion.button>
         </div>
-        <p className="mt-2 hidden text-center text-[11px] text-text-muted sm:block">
-          Enter to send · Shift+Enter for a new line · Grounded in verified résumé data
+        <p className="mt-2.5 hidden text-center font-sans text-[11px] text-text-muted sm:block">
+          Enter to send · Shift+Enter for a new line · Grounded in verified information
         </p>
       </form>
     </div>

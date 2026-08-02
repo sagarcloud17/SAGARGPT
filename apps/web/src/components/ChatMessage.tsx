@@ -41,7 +41,7 @@ export function ChatMessage({
         transition={{ duration: 0.25, ease: "easeOut" }}
         className="flex w-full justify-end"
       >
-        <div className="max-w-[min(85%,560px)] rounded-[22px] bg-accent px-4 py-3 text-[15px] leading-relaxed text-white shadow-[0_8px_24px_rgba(16,185,129,0.18)] sm:text-base">
+        <div className="max-w-[min(88%,520px)] rounded-[22px] bg-accent/90 px-4 py-3 font-sans text-[15px] leading-relaxed text-[#0b0f14] shadow-[0_6px_20px_rgba(62,207,142,0.12)] sm:text-[15px]">
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
         </div>
       </motion.div>
@@ -55,10 +55,10 @@ export function ChatMessage({
       transition={{ duration: 0.28, ease: "easeOut" }}
       className="flex w-full flex-col gap-3"
     >
-      <div className="w-full rounded-2xl bg-card/60 px-1 py-1 sm:px-2">
+      <div className="w-full max-w-full sm:max-w-[740px]">
         {showTyping && <TypingIndicator />}
         {message.content && (
-          <div className="relative">
+          <div className="relative font-sans">
             <MarkdownRenderer content={message.content} />
             {showCursor && (
               <span className="ml-0.5 inline-block h-4 w-[2px] animate-pulse bg-accent align-middle" />
@@ -72,7 +72,7 @@ export function ChatMessage({
           <button
             type="button"
             onClick={copy}
-            className="focus-ring inline-flex h-11 min-w-11 items-center gap-1.5 rounded-xl px-3 text-sm text-text-muted transition hover:bg-white/5 hover:text-text"
+            className="focus-ring inline-flex h-11 min-w-11 items-center gap-1.5 rounded-xl px-3 font-sans text-sm text-text-muted transition hover:bg-white/5 hover:text-text"
             aria-label="Copy message"
           >
             {copied ? (
@@ -86,7 +86,7 @@ export function ChatMessage({
             <button
               type="button"
               onClick={onRegenerate}
-              className="focus-ring inline-flex h-11 min-w-11 items-center gap-1.5 rounded-xl px-3 text-sm text-text-muted transition hover:bg-white/5 hover:text-text"
+              className="focus-ring inline-flex h-11 min-w-11 items-center gap-1.5 rounded-xl px-3 font-sans text-sm text-text-muted transition hover:bg-white/5 hover:text-text"
               aria-label="Regenerate response"
             >
               <RefreshCw className="h-4 w-4" />

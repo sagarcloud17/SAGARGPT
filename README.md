@@ -181,7 +181,10 @@ After deploy you get a URL like `https://something.fastapicloud.dev`.
 When the web app is on Vercel, set:
 
 - API: `CORS_ORIGINS=https://your-app.vercel.app`
-- Web: `NEXT_PUBLIC_API_URL=https://YOUR_APP.fastapicloud.dev`
+- FastAPI Cloud: set `API_SECRET` (Bearer token for `/chat` and `/resume`)
+- Web (Vercel): set `API_URL` (FastAPI base URL) and the **same** `API_SECRET`
+- Browser calls same-origin `/api/*` proxies; do **not** put `API_SECRET` in `NEXT_PUBLIC_*`
+- Optional: `NEXT_PUBLIC_API_URL` as fallback for `API_URL` on the server only
 
 ---
 

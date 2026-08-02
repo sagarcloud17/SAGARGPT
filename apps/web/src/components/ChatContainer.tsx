@@ -27,11 +27,11 @@ export function ChatContainer({
 
   return (
     <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain chat-scroll">
-      <div className="mx-auto flex min-h-full w-full max-w-[900px] flex-col px-4 py-5 sm:px-6 sm:py-8">
+      <div className="mx-auto flex min-h-full w-full max-w-[760px] flex-col px-4 py-4 sm:px-6 sm:py-6">
         {empty ? (
           <EmptyState onSelectPrompt={onSelectPrompt} disabled={busy} />
         ) : (
-          <div className="flex flex-col gap-6 pb-4 sm:gap-8">
+          <div className="flex flex-col gap-8 pb-6 sm:gap-10 sm:pb-8">
             {messages.map((m, idx) => (
               <ChatMessage
                 key={m.id}

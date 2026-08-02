@@ -4,14 +4,15 @@ from __future__ import annotations
 
 from typing import Literal
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from app.auth import require_api_key
 from app.rate_limit import limiter
 from app.rag.service import get_rag_service
 
-router = APIRouter(tags=["chat"])
+router = APIRouter(tags=["chat"], dependencies=[Depends(require_api_key)])
 
 
 class ChatMessage(BaseModel):

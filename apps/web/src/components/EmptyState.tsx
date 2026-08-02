@@ -12,7 +12,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ onSelectPrompt, disabled }: EmptyStateProps) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-1 py-6 sm:py-10">
+    <div className="flex flex-1 flex-col items-center justify-start px-1 pb-4 pt-2 sm:justify-center sm:pb-8 sm:pt-4">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -21,13 +21,13 @@ export function EmptyState({ onSelectPrompt, disabled }: EmptyStateProps) {
       >
         <Hero />
 
-        <p className="mt-5 max-w-md text-center text-sm leading-relaxed text-text-muted">
-          👋 Hi, I&apos;m {candidateShortName}&apos;s AI. I answer questions about{" "}
+        <p className="mt-4 max-w-md text-center font-sans text-[13px] leading-relaxed text-text-muted sm:mt-5 sm:text-sm">
+          👋 Hi, I&apos;m {candidateShortName}&apos;s AI. Ask about{" "}
           {candidateName}&apos;s experience, projects, architecture, and career —
-          every response grounded in verified information.
+          answers stay grounded in verified information.
         </p>
 
-        <div className="mt-8 w-full sm:mt-10">
+        <div className="mt-6 w-full sm:mt-8">
           <PromptChips
             layout="wrap"
             onSelect={onSelectPrompt}

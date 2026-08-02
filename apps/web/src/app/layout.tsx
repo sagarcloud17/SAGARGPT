@@ -5,11 +5,13 @@ import "./globals.css";
 const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -44,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} h-full overflow-hidden bg-bg antialiased`}
+        className={`${geistSans.className} ${geistSans.variable} ${geistMono.variable} h-full overflow-hidden bg-bg antialiased`}
       >
         {children}
       </body>
