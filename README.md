@@ -19,7 +19,7 @@ Personal AI assistant for recruiters — chat in real time with **Bantu Sagar’
 apps/api/          FastAPI + LangChain RAG
 apps/web/          Next.js 15 (App Router) + Tailwind v4
 scripts/ingest.py  PDF → Pinecone ingestion
-data/resume.pdf    Candidate résumé
+data/resume.pdf    Candidate information
 ```
 
 ---
@@ -181,7 +181,10 @@ After deploy you get a URL like `https://something.fastapicloud.dev`.
 When the web app is on Vercel, set:
 
 - API: `CORS_ORIGINS=https://your-app.vercel.app`
-- Web: `NEXT_PUBLIC_API_URL=https://YOUR_APP.fastapicloud.dev`
+- FastAPI Cloud: set `API_SECRET` (Bearer token for `/chat` and `/resume`)
+- Web (Vercel): set `API_URL` (FastAPI base URL) and the **same** `API_SECRET`
+- Browser calls same-origin `/api/*` proxies; do **not** put `API_SECRET` in `NEXT_PUBLIC_*`
+- Optional: `NEXT_PUBLIC_API_URL` as fallback for `API_URL` on the server only
 
 ---
 

@@ -64,6 +64,10 @@ async def on_startup() -> None:
         settings.cors_origin_list,
         settings.langsmith_enabled,
     )
+    if not (settings.api_secret or "").strip():
+        logger.warning(
+            "API_SECRET is missing — /chat and /resume will return 503 until it is set"
+        )
     if not settings.openai_api_key:
         logger.warning("OPENAI_API_KEY is missing")
     if not settings.pinecone_api_key:

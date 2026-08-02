@@ -53,6 +53,8 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    # Shared secret for Authorization: Bearer <API_SECRET>
+    api_secret: str = ""
 
     rate_limit_chat: str = "20/minute"
     rate_limit_default: str = "30/minute"
