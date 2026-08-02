@@ -14,11 +14,49 @@ from langsmith import traceable
 from pinecone import Pinecone
 
 from app.config import Settings, get_settings
-from app.rag.prompts import build_rag_user_prompt, build_system_prompt
+from app.rag.prompts import build_casual_user_prompt, build_rag_user_prompt, build_system_prompt
 
 logger = logging.getLogger(__name__)
 
 TOP_K = 5
+
+def _is_casual_turn(message: str) -> bool:
+    """True for greetings / thanks / small talk that should not dump résumé context."""
+    text = (message or "").strip().lower()
+    if not text:
+        return True
+    # Strip common punctuation for matching
+    cleaned = "".join(ch for ch in text if ch.isalnum() or ch.isspace() or ch in "'")
+    cleaned = " ".join(cleaned.split())
+    if len(cleaned) > 80:
+        return False
+    casual_exact = {
+        "hi", "hello", "hey", "hiya", "yo", "sup", "hi there", "hello there",
+        "hey there", "good morning", "good afternoon", "good evening",
+        "thanks", "thank you", "thx", "ty", "ok", "okay", "cool", "nice",
+        "great", "awesome", "how are you", "how's it going", "how r you",
+        "whats up", "what's up", "who are you", "what can you do",
+        "what do you do", "help", "hi!", "hello!",
+    }
+    if cleaned in casual_exact:
+        return True
+    prefixes = (
+        "hi ", "hello ", "hey ", "thanks ", "thank you", "good morning",
+        "good afternoon", "good evening", "how are you", "who are you",
+        "what can you do",
+    )
+    if any(cleaned.startswith(p) for p in prefixes) and len(cleaned.split()) <= 8:
+        # Avoid treating "hi, tell me about his projects" as casual
+        career_hints = (
+            "project", "experience", "skill", "work", "resume", "résumé",
+            "job", "architect", "tech", "stack", "company", "role", "hire",
+            "sagar", "bantu", "candidate", "background", "career",
+        )
+        if any(h in cleaned for h in career_hints):
+            return False
+        return True
+    return False
+
 
 
 class RAGService:
@@ -147,20 +185,26 @@ class RAGService:
     ) -> Iterator[str]:
         """Yield SSE `data: {json}\\n\\n` lines. Traced as a LangSmith chain run."""
         history = history or []
-        try:
-            docs = self.retrieve(message)
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("Retrieval failed")
-            yield _sse({"type": "error", "message": f"Retrieval failed: {exc}"})
-            yield _sse({"type": "done"})
-            return
-
-        citations = self.citations_from_docs(docs)
-        yield _sse({"type": "citations", "citations": citations})
-
-        context = self.format_context(docs)
         system = build_system_prompt(self.settings.candidate_name)
-        user_prompt = build_rag_user_prompt(message, context)
+        casual = _is_casual_turn(message)
+
+        if casual:
+            # Skip résumé retrieval so greetings do not become candidate overviews.
+            yield _sse({"type": "citations", "citations": []})
+            user_prompt = build_casual_user_prompt(message)
+        else:
+            try:
+                docs = self.retrieve(message)
+            except Exception as exc:  # noqa: BLE001
+                logger.exception("Retrieval failed")
+                yield _sse({"type": "error", "message": f"Retrieval failed: {exc}"})
+                yield _sse({"type": "done"})
+                return
+
+            citations = self.citations_from_docs(docs)
+            yield _sse({"type": "citations", "citations": citations})
+            context = self.format_context(docs)
+            user_prompt = build_rag_user_prompt(message, context)
 
         messages: list[Any] = [SystemMessage(content=system)]
         for turn in history[-8:]:
