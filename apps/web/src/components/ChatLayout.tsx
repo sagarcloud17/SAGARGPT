@@ -9,7 +9,6 @@ import { ConversationSidebar } from "@/components/ConversationSidebar";
 import { streamChat } from "@/lib/api";
 import {
   createMessageId,
-  loadActiveId,
   loadConversations,
   makeEmptyConversation,
   saveActiveId,
@@ -38,21 +37,18 @@ export function ChatLayout() {
 
   useEffect(() => {
     const stored = loadConversations();
-    let list = Array.isArray(stored) ? stored : [];
-    let id = loadActiveId();
-
-    if (list.length === 0) {
-      const first = makeEmptyConversation();
-      list = [first];
-      id = first.id;
-    } else if (!id || !list.some((c) => c.id === id)) {
-      id = list[0]!.id;
-    }
+    const previous = (Array.isArray(stored) ? stored : []).filter(
+      (c) => Array.isArray(c.messages) && c.messages.length > 0,
+    );
+    // Always open on a fresh home chat when the page loads / link is reopened.
+    // Past conversations remain available in the sidebar.
+    const home = makeEmptyConversation();
+    const list = [home, ...previous];
 
     setConversations(list);
-    setActiveId(id!);
+    setActiveId(home.id);
     saveConversations(list);
-    saveActiveId(id!);
+    saveActiveId(home.id);
     setHydrated(true);
   }, []);
 
